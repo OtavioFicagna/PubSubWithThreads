@@ -4,6 +4,8 @@ import random
 from queue import Queue
 from threading import Lock
 
+from informacoes import Informacao
+
 # Constantes
 T_MIN = 1
 T_MAX = 10
@@ -14,12 +16,6 @@ V_MAX = 10
 stop_threads = False
 
 # Classes
-class Informacao:
-    def __init__(self, seq, tipo, valor):
-        self.seq = seq
-        self.tipo = tipo
-        self.valor  = valor
-
 class Gerador:
     def __init__(self, id, lista_informacao):
         self.id = id
