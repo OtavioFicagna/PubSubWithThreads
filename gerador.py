@@ -1,29 +1,26 @@
 import _thread
 import time
 import random
+from queue import Queue
 from threading import Lock
+
+from informacoes import Informacao
 
 # Constantes
 T_MIN = 1
-T_MAX = 5
+T_MAX = 10
 V_MIN = 1
-V_MAX = 5
+V_MAX = 10
 
 # Variável global para controlar quando parar as threads
 stop_threads = False
 
 # Classes
-class Informacao:
-    def __init__(self, seq, tipo, valor):
-        self.seq = seq
-        self.tipo = tipo
-        self.valor  = valor
-
 class Gerador:
     def __init__(self, id, lista_informacao):
         self.id = id
         self.lista_informacao = lista_informacao
-        self.informacoes_geradas = []
+        self.informacoes_geradas = Queue()
         self.lock = Lock()  # Cada gerador tem seu próprio Lock
 
 # Funções
@@ -31,17 +28,17 @@ class Gerador:
 #  Função responsável por instanciar as threads geradoras de cada gerador e enviar as informações
 def enviaInformacao(gerador: Gerador):
     global stop_threads
-    while not stop_threads:
-        for tipo in gerador.lista_informacao:
-            # Criar thread para gerar informação apenas uma vez por tipo
-            _thread.start_new_thread(threadGeradora, (gerador, tipo, T_MIN, T_MAX, V_MIN, V_MAX))
 
-        while not stop_threads:
-            with gerador.lock:
-                if len(gerador.informacoes_geradas) > 0:
-                    msg = gerador.informacoes_geradas.pop(0)
-                    print(f"Gerador {gerador.id}: Tipo {msg.tipo}, Valor {msg.valor}")
-            time.sleep(1)  # Pequena pausa para evitar um loop muito rápido
+    for tipo in gerador.lista_informacao:
+        # Criar thread para gerar informação apenas uma vez por tipo
+        _thread.start_new_thread(threadGeradora, (gerador, tipo, T_MIN, T_MAX, V_MIN, V_MAX))
+
+    while not stop_threads:
+        with gerador.lock:
+            while not gerador.informacoes_geradas.empty():
+                msg = gerador.informacoes_geradas.get()
+                print(f"Gerador {gerador.id}: Tipo {msg.tipo}, Valor {msg.valor}")
+        time.sleep(1)  # Pequena pausa para evitar um loop muito rápido
 
 # Função responsável por gerar as informações e inserir na fila do gerador
 def threadGeradora(gerador: Gerador, tipo, T_MIN, T_MAX, V_MIN, V_MAX):
@@ -49,7 +46,7 @@ def threadGeradora(gerador: Gerador, tipo, T_MIN, T_MAX, V_MIN, V_MAX):
     while not stop_threads:
         informacao = Informacao(0, tipo, random.randint(V_MIN, V_MAX)) 
         with gerador.lock:
-            gerador.informacoes_geradas.append(informacao)
+            gerador.informacoes_geradas.put(informacao)
         time.sleep(random.randint(T_MIN, T_MAX))  # Pausa simulando o tempo de geração
 
 # Função responsável por instanciar os geradores
