@@ -1,4 +1,6 @@
-import _thread
+from informacoes import Informacao
+from queue import Queue
+import threading
 import socket
 import pickle
 
@@ -10,13 +12,7 @@ tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.connect(destino)
 
 inscricoes: set
-conteudo_recebido: list
-
-def inicializar():
-    global inscricoes
-    inscricoes = set(map(int, input("Insira os tópicos de inscrição separados por espaço: ").split()))
-
-    enviar_inscricoes()
+conteudo_recebido: Queue
 
 def parar():
     global tcp, inscricoes
@@ -27,7 +23,7 @@ def parar():
     tcp.close()
     exit(0)
 
-def esperar_usuario():
+def tratar_input():
     global inscricoes
     while True:
         op = input("Operação").lower()
@@ -55,15 +51,27 @@ def enviar_inscricoes():
 
     tcp.sendall(inscricoes_msg)
 
-def exibir_informacoes():
-    raise NotImplementedError()
+def obter_informacoes():
+    obj = tcp.recv(1024)
+    conteudo_recebido.put(pickle.loads(obj))
+
+def atualizar_gui():
+    info: Informacao = conteudo_recebido.get()
+    print(f'Informação é do tipo: {info.tipo}, sequência: {info.seq} e valor: {info.valor}')
 
 def main():
-    inicializar()
+    global inscricoes
+    inscricoes = set(map(int, input("Insira os tópicos de inscrição separados por espaço: ").split()))
+    enviar_inscricoes()
 
-    esperar_usuario()
+    input_handler = threading.Thread(target=tratar_input)
+    input_handler.start()
 
-    exibir_informacoes()
+    connection_handler = threading.Thread(target=obter_informacoes)
+    connection_handler.start()
+    
+    interface = threading.Thread(target=atualizar_gui)
+    interface.start()
 
 if __name__ == "__main__":
     main()
