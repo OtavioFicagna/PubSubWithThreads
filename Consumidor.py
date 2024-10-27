@@ -10,25 +10,50 @@ tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 tcp.connect(destino)
 
 inscricoes: set
+conteudo_recebido: list
 
 def inicializar():
     global inscricoes
-    inscricoes = list(map(int, input("Insira os tópicos de inscrição: ").split()))
+    inscricoes = set(map(int, input("Insira os tópicos de inscrição separados por espaço: ").split()))
 
-    inscricoes_msg = pickle.dumps(inscricoes)
+    enviar_inscricoes()
 
-    tcp.sendto(inscricoes_msg, destino)
+def parar():
+    global tcp, inscricoes
+    
+    inscricoes = {}
+    enviar_inscricoes()
+    
+    tcp.close()
+    exit(0)
 
 def esperar_usuario():
+    global inscricoes
     while True:
-        op = input("Operação")
+        op = input("Operação").lower()
 
-        if op.lower() not in ['sub', 'unsub', 'kill']:
+        if op not in ['sub', 'unsub', 'kill']:
             print('OPERAÇÃO INVÁLIDA')
-        
-        else:
-            raise NotImplementedError()
 
+        else:    
+            if op == 'sub':
+                novas_inscricoes = set(map(int, input('Insira os novos tópicos de inscrição: ').split()))
+                inscricoes = inscricoes.union(novas_inscricoes)
+                enviar_inscricoes()
+          
+            elif op == 'unsub':
+                remocao = set(map(int, input('Insira os tópicos para se desinscrever: ').split()))
+                inscricoes = inscricoes.difference(remocao)
+                enviar_inscricoes()
+
+            elif op == 'kill':
+                parar()
+
+def enviar_inscricoes():
+    global inscricoes
+    inscricoes_msg = pickle.dumps(inscricoes)
+
+    tcp.sendall(inscricoes_msg)
 
 def exibir_informacoes():
     raise NotImplementedError()
