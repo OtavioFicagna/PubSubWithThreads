@@ -1,10 +1,21 @@
 import _thread
+from threading import Lock
 import time
 import random
+import socket
+import pickle
 from queue import Queue
-from threading import Lock
 
+# Importando a classe informação
 from informacoes import Informacao
+
+# Parametros Servidor
+SERVER_DIFUSOR = '127.0.0.1'
+PORT_DIFUSOR= 5000
+
+# Criando o socket de conexão com o difusor
+udp = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+dest = (SERVER_DIFUSOR, PORT_DIFUSOR)
 
 # Constantes
 T_MIN = 1
@@ -36,8 +47,9 @@ def enviaInformacao(gerador: Gerador):
     while not stop_threads:
         with gerador.lock:
             while not gerador.informacoes_geradas.empty():
-                msg = gerador.informacoes_geradas.get()
-                print(f"Gerador {gerador.id}: Tipo {msg.tipo}, Valor {msg.valor}")
+                informacao = gerador.informacoes_geradas.get()
+                udp.sendto(pickle.dumps(informacao), dest)
+                print(f"Gerador {gerador.id}: Tipo {informacao.tipo}, Valor {informacao.valor}")
         time.sleep(1)  # Pequena pausa para evitar um loop muito rápido
 
 # Função responsável por gerar as informações e inserir na fila do gerador
@@ -71,7 +83,7 @@ def main():
     # Instanciando os geradores
     instanciaGeradores(qtdGeradores)
 
-    # Função que aguarda o usuário
+    # Aguarda o usuário para encerrar
     listen()
     
     # Pequena pausa para dar tempo das threads finalizarem corretamente
