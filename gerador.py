@@ -98,7 +98,7 @@ def main():
     # Aguarda o usuário para encerrar
     listen()
 
-    print("Programa encerrado.")
+    print("Encerrando programa...")
 
 if __name__ == "__main__":
     main()
