@@ -47,19 +47,25 @@ def enviar_para_clientes(info: Informacao):
                 del clientes_inscritos[client_socket]
 
 def monitorar_geradores():
-    info: Informacao
-    info, _endereco = udp_socket.recvfrom(1024)
-    buffer_conteudo.put(info)
+    seq = 1
+    while True:
+        info: Informacao
+        msg, _endereco = udp_socket.recvfrom(1024)
+        info = pickle.loads(msg)
+        info.seq = seq
+        print(f"Sequencia: {info.seq} Tipo: {info.tipo} Valor: {info.valor}")
+        buffer_conteudo.put(info)
+        seq += 1
 
 def main():
     thread_monitora_geradores = threading.Thread(target=monitorar_geradores)
     thread_monitora_geradores.start()
     
-    thread_monitora_consumidores = threading.Thread(target=monitorar_clientes, args=tcp_socket)
-    thread_monitora_consumidores.start()
+    #thread_monitora_consumidores = threading.Thread(target=monitorar_clientes, args=tcp_socket)
+    #thread_monitora_consumidores.start()
     
-    thread_envio = threading.Thread(target=enviar_para_clientes, args=(buffer_conteudo.get()))
-    thread_envio.start()
+    #thread_envio = threading.Thread(target=enviar_para_clientes, args=(buffer_conteudo.get()))
+    #thread_envio.start()
     
 if __name__ == "__main__":
     main()
