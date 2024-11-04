@@ -1,77 +1,89 @@
 from informacoes import Informacao
 from queue import Queue
 import threading
+from threading import Event
 import socket
 import pickle
+import time
+import os
 
 SERVER = '127.0.0.1'
 PORT = 8080
 destino = (SERVER, PORT)
 tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-tcp.connect(destino)
-
-inscricoes: set
-conteudo_recebido: Queue
+stop_event = Event()
+buffer = Queue()
 
 def parar():
-    global tcp, inscricoes
-    
-    inscricoes = {}
-    enviar_inscricoes()
-    
-    tcp.close()
-    exit(0)
+    if not stop_event.is_set():
+        stop_event.set()
+        try:
+            tcp.shutdown(socket.SHUT_RDWR)
+            tcp.close()
+        except Exception as e:
+            print(f"Erro ao fechar o socket: {e}")
+        finally:
+            print("Programa encerrado.")
+            os._exit(0)
 
-def tratar_input():
-    global inscricoes
-    while True:
-        op = input("Operação").lower()
+def interface():
+    while not stop_event.is_set():
+        while not buffer.empty():
+            msg = buffer.get()
+            print(f'Tipo: {msg.tipo}, Sequência: {msg.seq}, Valor: {msg.valor}')
+        time.sleep(0.1)
 
-        if op not in ['sub', 'unsub', 'kill']:
-            print('OPERAÇÃO INVÁLIDA')
+def enviar_inscricoes(topicos):
+    if stop_event.is_set():
+        return
+    try:
+        inscricoes_msg = pickle.dumps(topicos)
+        tcp.sendall(inscricoes_msg)
+    except Exception as e:
+        print(f"Erro ao enviar inscrições: {e}")
 
-        else:    
-            if op == 'sub':
-                novas_inscricoes = set(map(int, input('Insira os novos tópicos de inscrição: ').split()))
-                inscricoes = inscricoes.union(novas_inscricoes)
-                enviar_inscricoes()
-          
-            elif op == 'unsub':
-                remocao = set(map(int, input('Insira os tópicos para se desinscrever: ').split()))
-                inscricoes = inscricoes.difference(remocao)
-                enviar_inscricoes()
-
-            elif op == 'kill':
+def recebe_informacao():
+    while not stop_event.is_set():
+        try:
+            msg = tcp.recv(1024)
+            buffer.put(pickle.loads(msg))
+        except (EOFError, ConnectionResetError, socket.error):
+            if not stop_event.is_set():
+                print("Conexão com o servidor perdida!")
                 parar()
-
-def enviar_inscricoes():
-    global inscricoes
-    inscricoes_msg = pickle.dumps(inscricoes)
-
-    tcp.sendall(inscricoes_msg)
-
-def obter_informacoes():
-    obj = tcp.recv(1024)
-    conteudo_recebido.put(pickle.loads(obj))
-
-def atualizar_gui():
-    info: Informacao = conteudo_recebido.get()
-    print(f'Informação é do tipo: {info.tipo}, sequência: {info.seq} e valor: {info.valor}')
+            break
 
 def main():
-    global inscricoes
-    inscricoes = set(map(int, input("Insira os tópicos de inscrição separados por espaço: ").split()))
-    enviar_inscricoes()
+    try:
+        tcp.connect(destino)
+        while True:
+            topicos = set(map(int, input("Digite os tópicos para se inscrever (separados por espaço): ").split()))
+            erro = False
+            if len(topicos) == 0:
+                erro = True
+                print("É obrigatória a inscrição em pelo menos um tópico!")
+            else:
+                for t in topicos:
+                    if t < 1 or t > 6:
+                        print(f"Tópico: {t} é inválido! Digite os tópicos novamente.")
+                        erro = True
+            if not erro:
+                break
+        enviar_inscricoes(topicos)
 
-    input_handler = threading.Thread(target=tratar_input)
-    input_handler.start()
+        threads = [
+            threading.Thread(target=interface),
+            threading.Thread(target=recebe_informacao)
+        ]
 
-    connection_handler = threading.Thread(target=obter_informacoes)
-    connection_handler.start()
-    
-    interface = threading.Thread(target=atualizar_gui)
-    interface.start()
+        for thread in threads:
+            thread.start()
+
+        input("Digite enter para parar o programa!\n")
+        parar()
+    except ConnectionRefusedError:
+        print("Conexão recusada. Verifique a disponibilidade do servidor!")
 
 if __name__ == "__main__":
     main()
