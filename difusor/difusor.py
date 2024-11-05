@@ -31,10 +31,11 @@ def lidar_com_inscricoes(socket_cliente):
                 break
             topicos = pickle.loads(data)
             
-            if len(topicos) > 0:
+            if 0 in topicos:
                 clientes_inscritos[socket_cliente] = topicos
             else:
-                del clientes_inscritos[socket_cliente]
+                if socket_cliente in clientes_inscritos:
+                    del clientes_inscritos[socket_cliente]
                 socket_cliente.close()
         except (OSError, pickle.PickleError):
             socket_cliente.close()
@@ -45,6 +46,7 @@ def monitorar_clientes(server_socket):
     while not stop_event.is_set():
         try:
             client_socket, client_address = server_socket.accept()
+            clientes_inscritos[client_socket] = set()
             client_thread = threading.Thread(target=lidar_com_inscricoes, args=(client_socket,))
             client_thread.daemon = True
             client_thread.start()
@@ -56,7 +58,7 @@ def monitorar_clientes(server_socket):
 def enviar_para_clientes():
     while not stop_event.is_set():
         try:
-            info = buffer_conteudo.get(timeout=1)  # Timeout para verificar stop_event
+            info = buffer_conteudo.get(timeout=1)
             for client_socket, topicos in list(clientes_inscritos.items()):
                 if info.tipo in topicos:
                     try:
@@ -88,6 +90,8 @@ def aguardar_entrada():
 
     for client_socket in list(clientes_inscritos.keys()):
         try:
+            encerrar = Informacao(0, 0, 0)
+            client_socket.send(pickle.dumps(encerrar))
             client_socket.close()
         except Exception as e:
             print(e)
