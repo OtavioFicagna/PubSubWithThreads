@@ -4,6 +4,7 @@ import threading
 from threading import Event
 import socket
 import pickle
+import time
 
 HOST = '127.0.0.1'
 PORT_GERADORES = 5000
@@ -63,6 +64,7 @@ def enviar_para_clientes():
                 if info.tipo in topicos:
                     try:
                         client_socket.send(pickle.dumps(info))
+                        time.sleep(0.1)
                     except OSError:
                         del clientes_inscritos[client_socket]
         except Empty:
