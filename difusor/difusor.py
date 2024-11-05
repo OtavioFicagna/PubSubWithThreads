@@ -7,7 +7,7 @@ import pickle
 
 HOST = '127.0.0.1'
 PORT_GERADORES = 5000
-PORT_CONSUMIDORES = 8080
+PORT_CONSUMIDORES = 5010
 
 udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 udp_socket.bind((HOST, PORT_GERADORES))

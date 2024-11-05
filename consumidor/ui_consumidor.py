@@ -8,9 +8,9 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide2.QtCore import *
-from PySide2.QtGui import *
-from PySide2.QtWidgets import *
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
 class Ui_MainWindow(object):
@@ -89,7 +89,7 @@ class Ui_MainWindow(object):
         self.label_futebol.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Esportes:</span></p></body></html>", None))
         self.btn_esportes.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
         self.btn_novidades.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
-        self.label_novidades.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Novidades da Internet:</span></p></body></html>", None))
+        self.label_novidades.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:13pt; font-weight:600;\">Novidades da Internet:</span></p></body></html>", None))
         self.btn_eletronicos.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
         self.label_eletronicos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Eletr\u00f4nicos:</span></p></body></html>", None))
         self.label_politicas.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Pol\u00edticas:</span></p></body></html>", None))
@@ -99,4 +99,3 @@ class Ui_MainWindow(object):
         self.label_viagens.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Viagens:</span></p></body></html>", None))
         self.btn_negocios.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
     # retranslateUi
-
