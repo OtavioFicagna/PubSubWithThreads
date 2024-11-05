@@ -2,7 +2,7 @@
 # Sistema PubSub utilizando socket e threads
 
 ## Requisitos Necessários
-> **Obs:** A aplicação está homologada para funcionamento na versão 24.04 LTS do sistema operacional Ubuntu. Assim sendo, o funcionamento da aplicação não é garantido fora desse escopo.
+> **Obs:** A aplicação está homologada para funcionamento na versão 24.04 LTS e linux Mint do sistema operacional Ubuntu. Assim sendo, o funcionamento da aplicação não é garantido fora desse escopo.
 
 ### Ambiente Virtual
 1. É recomendada a utilização de um ambiente virtual do Python para execução. Para criação de um ambiente virtual, utilize o comando:
