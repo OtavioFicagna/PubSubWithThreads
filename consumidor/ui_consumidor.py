@@ -86,16 +86,16 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.label_futebol.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Esportes:</span></p></body></html>", None))
+        self.label_futebol.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Esportes:</span></p></body></html>", None))
         self.btn_esportes.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
         self.btn_novidades.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
-        self.label_novidades.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:13pt; font-weight:600;\">Novidades da Internet:</span></p></body></html>", None))
+        self.label_novidades.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Novidades da Internet:</span></p></body></html>", None))
         self.btn_eletronicos.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
-        self.label_eletronicos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Eletr\u00f4nicos:</span></p></body></html>", None))
-        self.label_politicas.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Pol\u00edticas:</span></p></body></html>", None))
+        self.label_eletronicos.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Eletr\u00f4nicos:</span></p></body></html>", None))
+        self.label_politicas.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Pol\u00edticas:</span></p></body></html>", None))
         self.btn_politicas.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
-        self.label_negocios.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Neg\u00f3cios:</span></p></body></html>", None))
+        self.label_negocios.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Neg\u00f3cios:</span></p></body></html>", None))
         self.btn_viagens.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
-        self.label_viagens.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:14pt; font-weight:600;\">Viagens:</span></p></body></html>", None))
+        self.label_viagens.setText(QCoreApplication.translate("MainWindow", u"<html><head/><body><p><span style=\" font-size:12pt; font-weight:600;\">Viagens:</span></p></body></html>", None))
         self.btn_negocios.setText(QCoreApplication.translate("MainWindow", u"Inscrever-se", None))
     # retranslateUi
